@@ -11,46 +11,66 @@ const Forgot = () => {
   };
 
   return (
-    <div className="flex flex-col sm:flex-row h-screen">
-      <div className="w-full sm:w-1/2 h-screen bg-white flex justify-center items-center">
-        <div className="md:w-4/5 sm:w-full px-4">
-          <h1 className="text-3xl font-semibold mb-6 text-center uppercase text-gray-800">Recuperar Contraseña</h1>
+    <div className="flex flex-col sm:flex-row min-h-screen font-sans">
+      <div className="w-full sm:w-1/2 min-h-screen bg-white flex justify-center items-center px-8 sm:px-16 py-12">
+        <div className="w-full max-w-md">
+          <Link to="/login" className="inline-flex items-center text-sm font-medium text-blue-600 hover:text-blue-800 mb-8 transition-colors">
+            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+            </svg>
+            Volver al inicio
+          </Link>
           
-          <form onSubmit={handleSubmit(sendEmail)}>
-            <div className="mb-4">
-              <label className="mb-2 block text-sm font-semibold">Correo Institucional</label>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Recuperar Contraseña</h1>
+          <p className="text-gray-500 mb-8">
+            Ingresa tu correo institucional y te enviaremos instrucciones seguras para restablecer tu acceso.
+          </p>
+          
+          <form onSubmit={handleSubmit(sendEmail)} className="space-y-5">
+            <div>
+              <label className="block text-sm font-semibold mb-2 text-gray-700">Correo Institucional</label>
               <input
                 type="email"
                 placeholder="nombre.apellido@epn.edu.ec"
-                className="block w-full rounded-md border border-gray-300 py-2 px-3 text-gray-700 focus:outline-none focus:border-blue-500"
-                {...register("email", { required: "El correo electrónico es obligatorio" })}
+                className="w-full rounded-lg border border-gray-300 py-2.5 px-4 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                {...register("email", { 
+                  required: "El correo es obligatorio",
+                  pattern: {
+                    value: /^[a-zA-Z0-9._%+-]+@epn\.edu\.ec$/,
+                    message: "Usa tu correo institucional (@epn.edu.ec)"
+                  }
+                })}
               />
-              {errors.email && <p className="text-red-600 text-sm mt-1">{errors.email.message}</p>}
+              {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>}
             </div>
 
-            <div className="mb-3 mt-6">
-              <button
-                disabled={loading}
-                className="bg-blue-600 text-white py-2 w-full rounded-xl hover:bg-blue-800 duration-300 disabled:bg-blue-300"
-              >
-                {loading ? "Enviando enlace..." : "Recuperar acceso"}
-              </button>
-            </div>
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-blue-600 text-white font-bold py-3 rounded-lg hover:bg-blue-700 transition-all duration-300 disabled:bg-blue-300 shadow-md hover:shadow-lg mt-4"
+            >
+              {loading ? "Enviando enlace..." : "Recuperar acceso"}
+            </button>
           </form>
-
-          <div className="mt-6 border-t pt-4 text-sm flex justify-between items-center">
-            <p className="text-gray-600">¿Ya la recordaste?</p>
-            <Link to="/login" className="py-2 px-5 bg-gray-100 text-gray-600 border rounded-xl hover:scale-105 duration-300">
-              Iniciar sesión
-            </Link>
-          </div>
         </div>
       </div>
 
-      <div className="w-full sm:w-1/2 h-1/3 sm:h-screen bg-blue-50 hidden sm:flex items-center justify-center">
-        <div className="text-center p-8">
-          <h2 className="text-3xl font-bold text-blue-800 mb-4">No te preocupes</h2>
-          <p className="text-gray-600">Te enviaremos un enlace seguro a tu correo institucional de la EPN para restablecer tu contraseña.</p>
+      <div 
+        className="hidden sm:flex w-1/2 min-h-screen relative bg-cover bg-center"
+        style={{ backgroundImage: "url('https://images.unsplash.com/photo-1456406644174-8ddd4cd52a06?q=80&w=2068&auto=format&fit=crop')" }}
+      >
+        <div className="absolute inset-0 bg-blue-900/80 flex flex-col justify-center items-center px-12 text-center">
+          <div className="w-20 h-20 bg-white/10 backdrop-blur-md rounded-full flex items-center justify-center mb-8 border border-white/20">
+            <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+            </svg>
+          </div>
+          <h2 className="text-4xl font-extrabold text-white mb-6 leading-tight">
+            Tranquilidad y seguridad.
+          </h2>
+          <p className="text-xl text-blue-100 max-w-lg">
+            Sabemos que la vida universitaria es agitada. Te ayudamos a recuperar tu cuenta de forma rápida para que puedas seguir estudiando.
+          </p>
         </div>
       </div>
     </div>

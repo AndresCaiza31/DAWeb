@@ -1,4 +1,3 @@
-//src/services/auth.service.js
 import { PrismaClient } from '../generated/prisma/index.js';
 import bcrypt from 'bcrypt';
 import crypto from 'crypto';

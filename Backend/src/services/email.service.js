@@ -35,3 +35,30 @@ export const sendVerificationEmail = async (userEmail, firstName, lastName, toke
 
   await transporter.sendMail(mailOptions);
 };
+
+export const sendPasswordResetEmail = async (email, firstName, token) => {
+  const resetLink = `${process.env.FRONTEND_URL}/reset-password/${token}`;
+
+  const mailOptions = {
+    from: process.env.SMTP_USER,
+    to: email,
+    subject: 'Recuperación de Contraseña - TSDS ESFOT',
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e5e7eb; border-radius: 10px;">
+        <h2 style="color: #1e3a8a; text-align: center;">Recuperación de Acceso</h2>
+        <p>Hola ${firstName},</p>
+        <p>Recibimos una solicitud para restablecer la contraseña de tu cuenta en la plataforma TSDS.</p>
+        <p>Si fuiste tú, haz clic en el siguiente botón para crear una nueva contraseña. Este enlace expirará en 1 hora.</p>
+        <div style="text-align: center; margin: 30px 0;">
+          <a href="${resetLink}" style="background-color: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold;">Restablecer mi contraseña</a>
+        </div>
+        <p style="color: #6b7280; font-size: 14px;">Si el botón no funciona, copia y pega este enlace en tu navegador:</p>
+        <p style="color: #2563eb; font-size: 14px; word-break: break-all;">${resetLink}</p>
+        <hr style="border: 0; border-top: 1px solid #e5e7eb; margin: 20px 0;" />
+        <p style="color: #9ca3af; font-size: 12px; text-align: center;">Si no solicitaste este cambio, ignora este correo. Tu cuenta está segura.</p>
+      </div>
+    `
+  };
+
+  await transporter.sendMail(mailOptions);
+};

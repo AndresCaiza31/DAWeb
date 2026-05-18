@@ -1,156 +1,137 @@
-import { useState } from 'react';
-import { registerUser } from '../api/authService';
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { useFetch } from "../hooks/useFetch";
+import { MdVisibility, MdVisibilityOff } from "react-icons/md";
 
 const Register = () => {
-  const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    password: ''
-  });
-  const [message, setMessage] = useState('');
-  const [isError, setIsError] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const { fetchDataBackend, loading } = useFetch();
+  const { register, handleSubmit, formState: { errors } } = useForm();
+  const navigate = useNavigate();
 
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    
-    const { firstName, lastName, email, password } = formData;
-
-    if (firstName.trim().length < 2 || lastName.trim().length < 2) {
-      setMessage('El nombre y apellido deben tener al menos 2 caracteres.');
-      setIsError(true);
-      return;
-    }
-
-    if (!email.endsWith('@epn.edu.ec')) {
-      setMessage('Debes utilizar tu correo institucional válido (@epn.edu.ec).');
-      setIsError(true);
-      return;
-    }
-
-    if (password.length < 8) {
-      setMessage('La contraseña debe tener mínimo 8 caracteres.');
-      setIsError(true);
-      return;
-    }
-
-    try {
-      const response = await registerUser(formData);
-      setMessage(response.message);
-      setIsError(false);
-    } catch (error) {
-      setMessage(error.response?.data?.error || 'Error al registrar usuario');
-      setIsError(true);
-    }
+  const onSubmit = async (dataForm) => {
+    await fetchDataBackend("/auth/register", dataForm, "POST");
+    navigate("/login");
   };
 
   return (
-    <div className="flex min-h-screen font-sans">
-      <div className="w-full lg:w-1/2 flex items-center justify-center bg-white p-8">
+    <div className="flex flex-col sm:flex-row min-h-screen font-sans">
+      {/* LADO IZQUIERDO: Formulario */}
+      <div className="w-full sm:w-1/2 min-h-screen bg-white flex justify-center items-center px-8 sm:px-16 py-12">
         <div className="w-full max-w-md">
-          <h2 className="text-3xl font-bold text-gray-900 text-center mb-2">BIENVENIDO(A)</h2>
-          <p className="text-sm text-gray-500 text-center mb-8">Ingresa tus datos institucionales</p>
-
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className="block text-sm font-bold text-gray-900 mb-1">Nombre</label>
-              <input
-                name="firstName"
-                placeholder="Ingresa tu nombre"
-                onChange={handleChange}
-                required
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Crea tu cuenta</h1>
+          <p className="text-gray-500 mb-8">Únete a la comunidad de la ESFOT y optimiza tu estudio.</p>
+          
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            <div className="flex flex-col sm:flex-row gap-4">
+              <div className="flex-1">
+                <label className="block text-sm font-semibold mb-2 text-gray-700">Nombre</label>
+                <input
+                  type="text"
+                  placeholder="Ej. Juan"
+                  className="w-full rounded-lg border border-gray-300 py-2.5 px-4 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                  {...register("firstName", { required: "El nombre es obligatorio" })}
+                />
+                {errors.firstName && <p className="text-red-500 text-sm mt-1">{errors.firstName.message}</p>}
+              </div>
+              <div className="flex-1">
+                <label className="block text-sm font-semibold mb-2 text-gray-700">Apellido</label>
+                <input
+                  type="text"
+                  placeholder="Ej. Pérez"
+                  className="w-full rounded-lg border border-gray-300 py-2.5 px-4 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                  {...register("lastName", { required: "El apellido es obligatorio" })}
+                />
+                {errors.lastName && <p className="text-red-500 text-sm mt-1">{errors.lastName.message}</p>}
+              </div>
             </div>
 
             <div>
-              <label className="block text-sm font-bold text-gray-900 mb-1">Apellido</label>
+              <label className="block text-sm font-semibold mb-2 text-gray-700">Correo Institucional</label>
               <input
-                name="lastName"
-                placeholder="Ingresa tu apellido"
-                onChange={handleChange}
-                required
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-bold text-gray-900 mb-1">Correo Institucional</label>
-              <input
-                name="email"
                 type="email"
                 placeholder="nombre.apellido@epn.edu.ec"
-                onChange={handleChange}
-                required
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full rounded-lg border border-gray-300 py-2.5 px-4 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                {...register("email", { 
+                  required: "El correo es obligatorio",
+                  pattern: {
+                    value: /^[a-zA-Z0-9._%+-]+@epn\.edu\.ec$/,
+                    message: "Usa tu correo institucional (@epn.edu.ec)"
+                  }
+                })}
               />
+              {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>}
             </div>
 
             <div>
-              <label className="block text-sm font-bold text-gray-900 mb-1">Contraseña</label>
+              <label className="block text-sm font-semibold mb-2 text-gray-700">Contraseña</label>
               <div className="relative">
                 <input
-                  name="password"
                   type={showPassword ? "text" : "password"}
-                  placeholder="****************"
-                  onChange={handleChange}
-                  required
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="Mínimo 8 caracteres"
+                  className="w-full rounded-lg border border-gray-300 py-2.5 px-4 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                  {...register("password", { 
+                    required: "La contraseña es obligatoria",
+                    minLength: { value: 8, message: "Mínimo 8 caracteres" }
+                  })}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500"
+                  className="absolute inset-y-0 right-3 flex items-center text-gray-400 hover:text-gray-600"
                 >
-                  <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                  </svg>
+                  {showPassword ? <MdVisibilityOff size={22} /> : <MdVisibility size={22} />}
                 </button>
               </div>
+              {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>}
             </div>
+
+            <p className="text-xs text-gray-500 leading-relaxed py-2">
+              Al registrarte, aceptas que el sistema procesará tus datos académicos para generar rutas de aprendizaje personalizadas.
+            </p>
 
             <button
               type="submit"
-              className="w-full bg-blue-600 text-white font-semibold py-2.5 rounded-md hover:bg-blue-700 transition-colors mt-4"
+              disabled={loading}
+              className="w-full bg-blue-600 text-white font-bold py-3 rounded-lg hover:bg-blue-700 transition-all duration-300 disabled:bg-blue-300 shadow-md hover:shadow-lg mt-2"
             >
-              Registrarse
+              {loading ? "Creando cuenta..." : "Registrarse ahora"}
             </button>
           </form>
 
-          {message && (
-            <div className={`mt-4 p-3 rounded-md text-center text-sm font-medium ${isError ? 'bg-red-100 text-red-700 border border-red-200' : 'bg-green-100 text-green-700 border border-green-200'}`}>
-              {message}
-            </div>
-          )}
-
-          <div className="flex items-center justify-between mt-8 pt-6">
-            <span className="text-sm text-gray-600">¿Ya posees una cuenta?</span>
-            <button 
-              type="button"
-              onClick={() => window.location.href = '/login'}
-              className="px-4 py-2 border border-gray-400 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
-            >
-              Iniciar sesión
-            </button>
+          <div className="mt-8 text-center text-sm text-gray-600">
+            ¿Ya tienes una cuenta?{" "}
+            <Link to="/login" className="font-bold text-blue-600 hover:underline">
+              Inicia sesión aquí
+            </Link>
           </div>
         </div>
       </div>
 
-      <div className="hidden lg:flex w-1/2 bg-[#f4f8fc] items-center justify-center p-12">
-        <div className="max-w-lg text-center">
-          <h2 className="text-4xl font-bold text-[#1e3a8a] mb-4">Plataforma TSDS</h2>
-          <p className="text-gray-600 text-lg leading-relaxed">
-            Descubre tu ruta de aprendizaje y resuelve tus dudas con nuestra IA entrenada con los sílabos de la ESFOT.
+      {/* LADO DERECHO: Imagen Decorativa */}
+      <div 
+        className="hidden sm:flex w-1/2 min-h-screen relative bg-cover bg-center"
+        style={{ backgroundImage: "url('https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=2071&auto=format&fit=crop')" }}
+      >
+        <div className="absolute inset-0 bg-blue-900/75 flex flex-col justify-center items-center px-12 text-center">
+          <h2 className="text-4xl font-extrabold text-white mb-6 leading-tight">
+            Potenciamos tu talento académico.
+          </h2>
+          <p className="text-xl text-blue-100 max-w-lg">
+            Únete a cientos de estudiantes de la ESFOT que ya están optimizando su tiempo de estudio con inteligencia artificial adaptada a sus necesidades.
           </p>
+          <div className="mt-10 flex gap-4">
+             {/* Un pequeño detalle decorativo de stats para que se vea más profesional */}
+             <div className="bg-white/10 backdrop-blur-md p-4 rounded-xl border border-white/20">
+                <p className="text-white font-bold text-2xl">100%</p>
+                <p className="text-blue-200 text-xs uppercase tracking-widest">Personalizado</p>
+             </div>
+             <div className="bg-white/10 backdrop-blur-md p-4 rounded-xl border border-white/20">
+                <p className="text-white font-bold text-2xl">AI</p>
+                <p className="text-blue-200 text-xs uppercase tracking-widest">Powered</p>
+             </div>
+          </div>
         </div>
       </div>
     </div>

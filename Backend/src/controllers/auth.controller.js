@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
 import { registerUser } from '../services/auth.service.js';
 import { sendVerificationEmail } from '../services/email.service.js';
+import { sendPasswordResetEmail } from '../services/email.service.js';
 
 const prisma = new PrismaClient();
 
@@ -71,21 +72,31 @@ export const login = async (req, res) => {
 export const forgotPassword = async (req, res) => {
   try {
     const { email } = req.body;
-    const rToken = crypto.randomBytes(32).toString('hex');
-    
-    const sql = `UPDATE "User" SET "resetToken" = '${rToken}' WHERE "email" = '${email}'`;
 
-    await prisma.$executeRawUnsafe(sql);
+    const user = await prisma.user.findUnique({
+      where: { email }
+    });
 
-    const user = await prisma.user.findFirst({ where: { email } });
-    
     if (!user) {
-      return res.status(404).json({ message: "Usuario no encontrado" });
+      return res.status(200).json({ message: "Si el correo está registrado, recibirás un enlace de recuperación." });
     }
 
-    res.json({ message: "Token de recuperación generado con éxito", resetToken: rToken });
+    const resetToken = crypto.randomBytes(32).toString('hex');
+    const resetTokenExpires = new Date(Date.now() + 3600000);
+
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        resetToken,
+        resetTokenExpires
+      }
+    });
+
+    await sendPasswordResetEmail(user.email, user.firstName, resetToken);
+
+    res.status(200).json({ message: "Si el correo está registrado, recibirás un enlace de recuperación." });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: "Error interno del servidor." });
   }
 };
 
