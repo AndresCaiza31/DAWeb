@@ -123,6 +123,7 @@ export const resetPassword = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
 export const getProfile = async (req, res) => {
   try {
     const user = await prisma.user.findUnique({
@@ -146,5 +147,49 @@ export const getProfile = async (req, res) => {
     res.json(user);
   } catch (error) {
     res.status(500).json({ error: "Error al obtener el perfil" });
+  }
+};
+
+export const updateProfile = async (req, res) => {
+  try {
+    const { firstName, lastName, currentPassword, newPassword } = req.body;
+    const userId = req.user.id;
+
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+    if (!user) {
+      return res.status(404).json({ error: "Usuario no encontrado" });
+    }
+
+    let updatedData = { firstName, lastName };
+
+    if (currentPassword && newPassword) {
+      const isMatch = await bcrypt.compare(currentPassword, user.password);
+      if (!isMatch) {
+        return res.status(400).json({ error: "La contraseña actual es incorrecta" });
+      }
+      const salt = await bcrypt.genSalt(10);
+      updatedData.password = await bcrypt.hash(newPassword, salt);
+    }
+
+    const updatedUser = await prisma.user.update({
+      where: { id: userId },
+      data: updatedData,
+      select: { 
+        id: true, 
+        firstName: true, 
+        lastName: true, 
+        email: true, 
+        semester: true, 
+        learningStyle: true 
+      }
+    });
+
+    res.status(200).json({ 
+      success: true, 
+      user: updatedUser 
+    });
+
+  } catch (error) {
+    res.status(500).json({ error: "Error interno del servidor" });
   }
 };

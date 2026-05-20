@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import * as authCtrl from '../controllers/auth.controller.js'; 
 import { getProfile } from '../controllers/auth.controller.js';
+import { updateProfile } from "../controllers/auth.controller.js";
 import { verifyToken } from '../middlewares/auth.middleware.js';
 
 const router = Router();
@@ -11,5 +12,6 @@ router.post('/login', authCtrl.login);
 router.post('/forgot-password', authCtrl.forgotPassword); 
 router.post('/reset-password/:token', authCtrl.resetPassword);
 router.get('/profile', verifyToken, getProfile);
+router.put("/profile", verifyToken, updateProfile);
 
 export default router;

@@ -5,7 +5,7 @@ import AuthContext from '../context/AuthProvider';
 const Dashboard = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const navigate = useNavigate();
-  
+
   const { auth, logoutAuth } = useContext(AuthContext);
 
   const userData = {
@@ -22,10 +22,10 @@ const Dashboard = () => {
 
   return (
     <div className="flex h-screen bg-gray-50 font-sans overflow-hidden">
-      
+
       {/* --- SIDEBAR (BARRA LATERAL) --- */}
       {isSidebarOpen && (
-        <div 
+        <div
           className="fixed inset-0 bg-gray-900/50 z-20 lg:hidden transition-opacity"
           onClick={() => setIsSidebarOpen(false)}
         ></div>
@@ -35,7 +35,7 @@ const Dashboard = () => {
         <div className="flex items-center justify-center h-20 border-b border-gray-100">
           <h1 className="text-2xl font-bold text-blue-800 tracking-tight">TSDS <span className="text-blue-500">Learning</span></h1>
         </div>
-        
+
         <nav className="p-4 space-y-2 mt-4">
           <button className="flex items-center gap-3 w-full px-4 py-3 text-blue-700 bg-blue-50 rounded-xl font-semibold text-left transition-colors">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
@@ -45,14 +45,17 @@ const Dashboard = () => {
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
             Rutas de Estudio
           </button>
-          <button className="flex items-center gap-3 w-full px-4 py-3 text-gray-600 hover:text-blue-700 hover:bg-gray-50 rounded-xl font-medium text-left transition-colors">
+          <button
+            onClick={() => navigate('/profile')}
+            className="flex items-center gap-3 w-full px-4 py-3 text-gray-600 hover:text-blue-700 hover:bg-gray-50 rounded-xl font-medium text-left transition-colors"
+          >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
             Mi Perfil
           </button>
         </nav>
 
         <div className="absolute bottom-0 w-full p-4 border-t border-gray-100">
-          <button 
+          <button
             onClick={handleLogout}
             className="flex items-center gap-3 w-full px-4 py-3 text-red-600 hover:bg-red-50 rounded-xl font-medium transition-colors"
           >
@@ -64,11 +67,11 @@ const Dashboard = () => {
 
       {/* --- CONTENIDO PRINCIPAL --- */}
       <div className="flex-1 flex flex-col overflow-hidden">
-        
+
         {/* Topbar */}
         <header className="h-20 bg-white border-b border-gray-200 flex items-center justify-between px-6 lg:px-10 z-10">
           <div className="flex items-center gap-4">
-            <button 
+            <button
               onClick={() => setIsSidebarOpen(true)}
               className="lg:hidden p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
             >
@@ -76,7 +79,7 @@ const Dashboard = () => {
             </button>
             <h2 className="text-xl font-bold text-gray-800 hidden sm:block">Panel de Control</h2>
           </div>
-          
+
           <div className="flex items-center gap-4">
             <button className="p-2 text-gray-400 hover:text-blue-600 transition-colors relative">
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
@@ -90,9 +93,9 @@ const Dashboard = () => {
 
         {/* Área scrolleable central */}
         <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50 p-6 lg:p-10">
-          
+
           <div className="max-w-6xl mx-auto space-y-8">
-            
+
             {/* Saludo */}
             <div>
               <h3 className="text-3xl font-extrabold text-gray-900">¡Hola, {userData.firstName}! 👋</h3>
